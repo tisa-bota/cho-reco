@@ -1,22 +1,12 @@
-// recommender.js — コードデータ・レコメンドロジック
+// recommender.js — コードデータ・レコメンドロジック（Lite版：6ジャンルのみ）
 
-const SUBS = {
-  'I':      [{sub:'IIIm',type:'トニック代理',reason:'IとIIImはド・ミを共有。明るさはそのままに複雑さが増す'},{sub:'VIm',type:'トニック代理',reason:'IとVImはミ・ソを共有（最も一般的な代理）'}],
-  'Im':     [{sub:'bVI',type:'トニック代理',reason:'ImとbVIはミb・ソを共有。暗さを保ちつつ色彩感が増す'},{sub:'bIII',type:'トニック代理',reason:'マイナーキーのIIIb代理。柔らかい解決感'}],
-  'II':     [{sub:'IV',type:'サブドミナント代理',reason:'IIとIVはファ・ラを共有。より安定した響き'}],
-  'IIm':    [{sub:'IV',type:'サブドミナント代理',reason:'IImとIVはファ・ラを共有。より安定した響き'}],
-  'IIm7':   [{sub:'IVmaj7',type:'サブドミナント代理',reason:'共通トーン（ファ・ラ）で自然に入れ替え可能'}],
-  'IV':     [{sub:'IIm',type:'サブドミナント代理',reason:'IVとIImはファ・ラを共有。よりジャジーな響きに'},{sub:'IIm7',type:'サブドミナント代理',reason:'7thを加えてさらに洗練された代理'}],
-  'IVmaj7': [{sub:'IIm7',type:'サブドミナント代理',reason:'共通トーン（ファ・ラ）で自然に入れ替え可能'}],
-  'V':      [{sub:'VIIm7b5',type:'ドミナント代理',reason:'VとVIIm7b5はシ・レ・ファを共有。テンション高め'},{sub:'bII7',type:'裏コード (tritone sub)',reason:'ルートが増4度離れた裏コード。半音解決で強烈'}],
-  'V7':     [{sub:'bII7',type:'裏コード (tritone sub)',reason:'V7のトライトーン代理。ルート半音下降で解決'},{sub:'VIIm7b5',type:'ドミナント代理',reason:'VとVIIm7b5はガイドトーン（シ・ファ）を共有'}],
-  'Imaj7':  [{sub:'IIIm7',type:'トニック代理',reason:'Imaj7とIIIm7はミ・ソ・シを共有。明るく流れる'}],
-  'VIm':    [{sub:'I',type:'トニック代理',reason:'VImとIはド・ミを共有。解決感を出したい時に'}],
-  'VIm7':   [{sub:'Imaj7',type:'トニック代理',reason:'VIm7とImaj7はミ・ソを共有。明るく解決'}],
-  'bVII':   [{sub:'V',type:'ドミナント代理',reason:'モーダルなbVIIはクラシックなVの代わりに使える'},{sub:'bVII7',type:'ドミナント代理',reason:'7thを加えてよりファンキーなドミナント代理に'}],
-  'bVII7':  [{sub:'V7',type:'ドミナント代理',reason:'bVII7をV7に戻すと機能和声的な解決感が強まる'}],
-  'IIIm':   [{sub:'I',type:'トニック代理',reason:'IIImとIはド・ミを共有。より安定したトニックへ'}],
-  'IIIm7':  [{sub:'Imaj7',type:'トニック代理',reason:'IIIm7とImaj7はミ・ソ・シを共有。明るく安定'}],
+const GENRE_META = {
+  pop:    { label: 'J-Pop',   desc: '王道進行で作る、明るく安定した邦楽ポップス' },
+  rock:   { label: 'ロック',   desc: 'パワーコードや循環進行で作る力強いサウンド' },
+  jazz:   { label: 'ジャズ',   desc: 'II-V-Iを軸にした洗練されたハーモニー' },
+  ballad: { label: 'バラード', desc: 'じんわり感動を生む、大人びた王道バラード' },
+  anime:  { label: 'アニメ',   desc: '疾走感と転調で感情を爆発させるアニソン進行' },
+  chill:  { label: 'チル',     desc: 'Lo-fiやシティポップ系のリラックスした響き' },
 };
 
 const DATA = {
@@ -129,7 +119,6 @@ function suggest(genre, key, mood, count) {
   } else {
     picked = scored.slice(0, count);
   }
-  // Resolve chords using the selected key
   return picked.map(p => ({
     ...p,
     resolvedChords: p.numerals.map(num => resolveNumeral(num, chords)),

@@ -181,6 +181,13 @@ body {
   box-shadow: 0 2px 8px rgba(155,93,229,0.35);
 }
 
+.genre-desc {
+  font-size: 12px;
+  color: var(--text2);
+  margin-top: .6rem;
+  line-height: 1.5;
+}
+
 /* ─── Select ─────────────────────────────── */
 select {
   padding: 8px 12px;

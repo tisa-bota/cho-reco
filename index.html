@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="CHO RECO">
+<meta name="apple-mobile-web-app-title" content="CHO RECO Lite">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#9b5de5">
-<title>CHO RECO</title>
+<meta name="theme-color" content="#3bb8f0">
+<title>CHO RECO Lite</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
@@ -17,8 +17,8 @@
 <!-- PWA Header -->
 <div class="pwa-header">
   <div>
-    <div class="pwa-header-text">CHO RECO</div>
-    <div class="pwa-header-sub">コード進行レコメンダー＋シーケンサー</div>
+    <div class="pwa-header-text">CHO RECO Lite</div>
+    <div class="pwa-header-sub">コード進行レコメンダー</div>
   </div>
 </div>
 
@@ -26,8 +26,6 @@
 <div class="tab-bar">
   <button class="tab-btn active" onclick="switchTab('recommender')">🎵 レコメンド</button>
   <button class="tab-btn" onclick="switchTab('pad')">🎹 パッド</button>
-  <button class="tab-btn" onclick="switchTab('favorites')">♡ お気に入り</button>
-  <button class="tab-btn" onclick="switchTab('sequencer')">🥁 シーケンサー</button>
 </div>
 
 <!-- ══════════════════════════════════════════════
@@ -37,14 +35,8 @@
 
   <div class="card">
     <div class="card-title">① ジャンル</div>
-    <div class="pill-group" id="genre-pills">
-      <button class="pill active" data-genre="pop">J-Pop</button>
-      <button class="pill" data-genre="rock">ロック</button>
-      <button class="pill" data-genre="jazz">ジャズ</button>
-      <button class="pill" data-genre="ballad">バラード</button>
-      <button class="pill" data-genre="anime">アニメ</button>
-      <button class="pill" data-genre="chill">チル</button>
-    </div>
+    <div class="pill-group" id="genre-pills"></div>
+    <div class="genre-desc" id="genre-desc"></div>
   </div>
 
   <div class="card">
@@ -96,138 +88,19 @@
         <div class="pad-desc" id="pad-pattern-desc"></div>
       </div>
       <div class="pad-grid" id="pad-grid"></div>
-      <button class="fav-add-btn" id="fav-add-btn" onclick="handleFavAdd()">♡ お気に入り登録</button>
-    </div>
-    <div class="card">
-      <div class="card-title" style="margin-bottom:.5rem">シーケンサーへ読み込む</div>
-      <p style="font-size:12px;color:var(--text2);margin-bottom:.75rem">このコード進行をシーケンサーに配置して試せます</p>
-      <button class="btn-primary" onclick="sendToSequencer()">▶ シーケンサーで試す</button>
     </div>
   </div>
   <div id="pad-empty" class="empty">レコメンドタブでパターンを選んで<br>「試す」ボタンを押してください</div>
 </div>
 
-<!-- ══════════════════════════════════════════════
-     TAB 3: お気に入り
-══════════════════════════════════════════════ -->
-<div id="tab-favorites" class="tab-content">
-  <div class="card">
-    <div class="card-title">お気に入りのコード進行</div>
-    <div id="fav-empty" class="empty" style="padding:1rem 0">まだ登録がありません</div>
-    <div id="fav-list"></div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════════════
-     TAB 4: シーケンサー
-══════════════════════════════════════════════ -->
-<div id="tab-sequencer" class="tab-content">
-
-  <!-- トランスポート -->
-  <div class="transport">
-    <button class="tbtn" id="play-btn" onclick="togglePlay()">▶ 再生</button>
-    <button class="tbtn" onclick="stopSeq()">■ 停止</button>
-    <div class="bpm-row">
-      BPM
-      <input type="range" min="60" max="180" step="1" value="100"
-        oninput="bpm=+this.value;document.getElementById('bv').textContent=this.value">
-      <span id="bv" style="font-weight:600;min-width:26px">100</span>
-    </div>
-    <div class="bpm-row">
-      ステップ数
-      <select class="steps-sel" onchange="changeSteps(+this.value)">
-        <option value="16">16</option>
-        <option value="32" selected>32</option>
-      </select>
-    </div>
-    <button class="tbtn" onclick="clearAll()">全クリア</button>
-  </div>
-
-  <!-- コードトラック -->
-  <div class="section">
-    <div class="sec-head">
-      <span class="sec-label">コードトラック</span>
-      <select class="key-sel" id="key-sel" onchange="buildChordPicker()">
-        <option>C</option><option>D</option><option>E</option><option>F</option>
-        <option>G</option><option>A</option><option>B</option>
-        <option>Cm</option><option>Dm</option><option>Em</option>
-        <option>Fm</option><option>Gm</option><option>Am</option><option>Bm</option>
-      </select>
-      <!-- 音色選択 -->
-      <select class="timbre-sel" onchange="chordTimbre=this.value" title="コード音色">
-        <option value="piano">🎹 Piano</option>
-        <option value="epiano">🎵 E.Piano</option>
-        <option value="guitar">🎸 Guitar</option>
-        <option value="pad">🌊 Pad</option>
-        <option value="organ">🎷 Organ</option>
-        <option value="mute">🔇 Mute</option>
-      </select>
-    </div>
-    <div class="grid-wrap">
-      <div style="width:44px;flex-shrink:0">
-        <div style="height:20px;border-right:1px solid var(--border);border-bottom:1px solid var(--border)"></div>
-        <div class="tn" style="height:26px;border-bottom:1px solid var(--border)">コード</div>
-      </div>
-      <div style="flex:1;overflow-x:auto">
-        <div class="bar-header" id="chord-bar-header"></div>
-        <div class="track-row"><div class="cells" id="chord-cells"></div></div>
-      </div>
-    </div>
-    <div class="chord-picker" id="chord-picker"></div>
-  </div>
-
-  <!-- ドラムトラック -->
-  <div class="section">
-    <div class="sec-head"><span class="sec-label">ドラムトラック</span></div>
-    <div class="grid-wrap">
-      <div style="width:44px;flex-shrink:0">
-        <div style="height:20px;border-right:1px solid var(--border);border-bottom:1px solid var(--border)"></div>
-        <div id="drum-tn-col"></div>
-      </div>
-      <div style="flex:1;overflow-x:auto">
-        <div class="bar-header" id="drum-bar-header"></div>
-        <div id="drum-rows"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- メロディートラック -->
-  <div class="section">
-    <div class="sec-head">
-      <span class="sec-label">メロディートラック</span>
-      <span style="font-size:10px;color:var(--text3)">左の鍵盤をクリックして音を選択 → グリッドをクリックで配置</span>
-    </div>
-    <div class="note-dur-row">
-      <span class="ndlabel">音符:</span>
-      <button class="ndbtn" data-dur="16" onclick="selDur(16)">全音符</button>
-      <button class="ndbtn" data-dur="8" onclick="selDur(8)">2分音符</button>
-      <button class="ndbtn sel" data-dur="4" onclick="selDur(4)">4分音符</button>
-      <button class="ndbtn" data-dur="2" onclick="selDur(2)">8分音符</button>
-      <button class="ndbtn" data-dur="1" onclick="selDur(1)">16分音符</button>
-    </div>
-    <div class="grid-wrap">
-      <div style="width:44px;flex-shrink:0">
-        <div style="height:20px;border-right:1px solid var(--border);border-bottom:1px solid var(--border)"></div>
-        <div id="mel-tn-col"></div>
-      </div>
-      <div style="flex:1;overflow-x:auto">
-        <div class="bar-header" id="mel-bar-header"></div>
-        <div id="mel-rows"></div>
-      </div>
-    </div>
-  </div>
-</div><!-- /tab-sequencer -->
-
 <!-- ══ Scripts ══ -->
-<script src="js/storage.js"></script>
 <script src="js/audio.js"></script>
 <script src="js/recommender.js"></script>
-<script src="js/sequencer.js"></script>
 <script src="js/pad.js"></script>
 
 <script>
 // ─── Tab switching ───────────────────────────
-const TABS = ['recommender','pad','favorites','sequencer'];
+const TABS = ['recommender','pad'];
 function switchTab(name) {
   TABS.forEach(t => {
     document.getElementById('tab-' + t).classList.toggle('active', t === name);
@@ -235,20 +108,27 @@ function switchTab(name) {
   document.querySelectorAll('.tab-btn').forEach((btn, i) => {
     btn.classList.toggle('active', TABS[i] === name);
   });
-  if (name === 'favorites') renderFavorites();
-  if (name === 'sequencer' && !_seqInited) { render(); buildChordPicker(); _seqInited = true; }
 }
-let _seqInited = false;
 
 // ─── Genre / count pills ──────────────────────
-let selGenre = 'pop', selCount = 4;
-document.querySelectorAll('#genre-pills .pill').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('#genre-pills .pill').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    selGenre = btn.dataset.genre;
+let selGenre = Object.keys(GENRE_META)[0];
+let selCount = 4;
+
+function renderGenrePills() {
+  const wrap = document.getElementById('genre-pills');
+  wrap.innerHTML = Object.keys(GENRE_META).map(gk => `
+    <button class="pill ${gk === selGenre ? 'active' : ''}" data-genre="${gk}">${GENRE_META[gk].label}</button>
+  `).join('');
+  wrap.querySelectorAll('.pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      selGenre = btn.dataset.genre;
+      renderGenrePills();
+    });
   });
-});
+  document.getElementById('genre-desc').textContent = GENRE_META[selGenre] ? GENRE_META[selGenre].desc : '';
+}
+renderGenrePills();
+
 document.querySelectorAll('#count-pills .pill').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('#count-pills .pill').forEach(b => b.classList.remove('active'));
@@ -315,23 +195,9 @@ function toggleRCard(id) {
 // ─── Open pad from recommender ───────────────
 function openPad(pattern) {
   showPad(pattern);
-  // パッドタブへ
   switchTab('pad');
   document.getElementById('pad-empty').style.display = 'none';
 }
-
-// ─── Send current pad pattern to sequencer ───
-function sendToSequencer() {
-  if (!currentPattern) return;
-  loadChordProgression(currentPattern.resolvedChords);
-  switchTab('sequencer');
-}
-
-// ─── Init ─────────────────────────────────────
-render();
-buildChordPicker();
-_seqInited = true;
-renderFavorites();
 </script>
 
 </body>
